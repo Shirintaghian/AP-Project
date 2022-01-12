@@ -1,0 +1,10 @@
+User
+username UNIQUE CHAR(200)
+password CHAR(64)
+joined_at TIMESTAMP
+
+Student
+studentID UNIQUE CHAR(200)
+year INT
+gender CHAR(64)
+gpa FLOAT

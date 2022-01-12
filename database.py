@@ -1,7 +1,18 @@
 class Table:
-    def __init__(self, name, fields):
+    records = []
+    def __init__(self, name: str, fields: list):
         self.name = name
         self.fields = fields
 
-    def insert(self, field):
+    def update(self, field):
         pass
+
+    def delete(self, record):
+        pass
+
+
+class Field:
+    def __init__(self, name, fieldType, isUnique):
+        self.name = name
+        self.fieldType = fieldType
+        self.isUnique = isUnique
