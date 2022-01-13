@@ -3,18 +3,20 @@ from database import Table, Field
 tableList = []
 
 def insertRecord(cmds):
+    print(cmds)
     tableName = cmds[3]
     fields = cmds[5]
-    fields.replace('(','')
-    fields.replace(')','')
-    fields.replace(';','')
+    fields.replace('(', '')
+    fields.replace(')', '')
+    fields.replace(';', '')
     fieldValues = fields.split(',')
 
     for table in tableList:
         if table.name == tableName:
+            print("hello")
             if len(fieldValues) == len(table.fields):
-                table.records.append(fieldValues)
-                print(table.records)
+                table.insert(fieldValues)
+                table.updateFile()
             else:
                 print("wrong number of fields")    
 
@@ -37,11 +39,11 @@ def main():
         if line == '\n':
             count = 0
         elif count == 0:
-            t = Table(line, [])
+            t = Table(line.strip(), [])
             tableList.append(t)
             count = 1
         else:
-            words = line.split(' ')
+            words = line.strip().split(' ')
             name = ''
             fieldType = ''
             isUnique = False
@@ -56,22 +58,24 @@ def main():
             f = Field(name=name, fieldType=fieldType, isUnique=isUnique)
             t.fields.append(f) 
 
-    print("hello????")       
     while(True):
         command = input()
         if command == 'quit':
             break
         cmdWords = command.split(' ')
-        if cmdWords[1] == 'INSERT':
-            insertRecord(cmdWords)
-        elif cmdWords[1] == 'UPDATE':
-            updateRecord()
-        elif cmdWords[1] == 'DELETE':
-            deleteRecord()
-        elif cmdWords[1] == 'SELECT':
-            selectRecord()
+        if len(cmdWords)<2:
+            print("WRONG COMMAND!")
         else:
-            pass
+            if cmdWords[1] == 'INSERT':
+                insertRecord(cmdWords)
+            elif cmdWords[1] == 'UPDATE':
+                updateRecord()
+            elif cmdWords[1] == 'DELETE':
+                deleteRecord()
+            elif cmdWords[1] == 'SELECT':
+                selectRecord()
+            else:
+                print("WRONG COMMAND!")
 
 if __name__ == '__main__':
     main()
