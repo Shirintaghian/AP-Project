@@ -3,17 +3,17 @@ from database import Table, Field
 tableList = []
 
 def insertRecord(cmds):
-    print(cmds)
     tableName = cmds[3]
     fields = cmds[5]
-    fields.replace('(', '')
-    fields.replace(')', '')
-    fields.replace(';', '')
+    print(fields)
+    fields = fields.replace('(', '')
+    fields = fields.replace(')', '')
+    fields = fields.replace(';', '')
+    print(fields)
     fieldValues = fields.split(',')
 
     for table in tableList:
         if table.name == tableName:
-            print("hello")
             if len(fieldValues) == len(table.fields):
                 table.insert(fieldValues)
                 table.updateFile()
@@ -57,6 +57,9 @@ def main():
             
             f = Field(name=name, fieldType=fieldType, isUnique=isUnique)
             t.fields.append(f) 
+
+    for tbl in tableList:
+        tbl.updateFile()
 
     while(True):
         command = input()

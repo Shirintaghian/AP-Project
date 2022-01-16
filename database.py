@@ -19,25 +19,32 @@ class Table:
 
         for r in self.records:
             for p in r:
-                if len(r)> maxLength:
-                    maxLength = len(r)        
+                if len(p)> maxLength:
+                    maxLength = len(p)        
 
         maxLength=maxLength+2
         lineLength = len(self.fields)*maxLength
+        dashedLine = '-'*lineLength
         filename = self.name+'.txt'
         f = open(filename, "w")
 
-        for i in range(lineLength):
-            f.write("-")
+        f.write(dashedLine)
+        f.write("\n")
 
         for field in self.fields:
             f.write(field.name)
+            f.write(' || ')
+        f.write("\n")
+        f.write(dashedLine)
+        f.write("\n")
 
         for rec in self.records:
             for part in rec:
                 f.write(part)
-                f.write("--")
-            f.write("\n")    
+                f.write(" || ")
+            f.write("\n") 
+            f.write(dashedLine)
+            f.write("\n")   
         f.close()  
 
 
