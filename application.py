@@ -21,7 +21,33 @@ def insertRecord(cmds):
                 print("wrong number of fields")    
 
 def updateRecord(cmds):
-    pass
+    tableName = cmds[2]
+    fields = None
+    conditions, orCond, andCond = [], False, False
+    if "OR" in cmds:
+        conditions = [cmds[4], cmds[6]]
+        orCond = True
+        fields = cmds[8]
+    elif "AND" in cmds:
+        conditions = [cmds[4], cmds[6]]
+        andCond = True
+        fields = cmds[8]
+    else:
+        conditions = [cmds[4]]
+        fields = cmds[6]
+    
+    fields = fields.replace('(', '')
+    fields = fields.replace(')', '')
+    fields = fields.replace(';', '')
+    fieldValues = fields.split(',')
+
+    for table in tableList:
+        if table.name == tableName:
+            if len(fieldValues) == len(table.fields):
+                table.update(fieldValues, conditions, andCond, orCond)
+                table.updateFile()
+            else:
+                print("wrong number of fields") 
 
 def deleteRecord(cmds):
     pass
