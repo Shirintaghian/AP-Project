@@ -5,11 +5,9 @@ tableList = []
 def insertRecord(cmds):
     tableName = cmds[3]
     fields = cmds[5]
-    print(fields)
     fields = fields.replace('(', '')
     fields = fields.replace(')', '')
     fields = fields.replace(';', '')
-    print(fields)
     fieldValues = fields.split(',')
 
     for table in tableList:
@@ -50,7 +48,22 @@ def updateRecord(cmds):
                 print("wrong number of fields") 
 
 def deleteRecord(cmds):
-    pass
+    tableName = cmds[3]
+    conditions, orCond, andCond = [], False, False
+    if "OR" in cmds:
+        conditions = [cmds[5], cmds[7].replace(';', '')]
+        orCond = True
+    elif "AND" in cmds:
+        conditions = [cmds[5], cmds[7].replace(';', '')]
+        andCond = True
+    else:
+        conditions = [cmds[5].replace(';', '')]
+    
+    for table in tableList:
+        if table.name == tableName:
+            table.delete(conditions, andCond, orCond)
+            table.updateFile()
+
 
 def selectRecord(cmds):
     pass
@@ -98,11 +111,11 @@ def main():
             if cmdWords[1] == 'INSERT':
                 insertRecord(cmdWords)
             elif cmdWords[1] == 'UPDATE':
-                updateRecord()
+                updateRecord(cmdWords)
             elif cmdWords[1] == 'DELETE':
-                deleteRecord()
+                deleteRecord(cmdWords)
             elif cmdWords[1] == 'SELECT':
-                selectRecord()
+                selectRecord(cmdWords)
             else:
                 print("WRONG COMMAND!")
 
