@@ -66,7 +66,21 @@ def deleteRecord(cmds):
 
 
 def selectRecord(cmds):
-    pass
+    tableName = cmds[3]
+    conditions, orCond, andCond = [], False, False
+    if "OR" in cmds:
+        conditions = [cmds[5], cmds[7].replace(';', '')]
+        orCond = True
+    elif "AND" in cmds:
+        conditions = [cmds[5], cmds[7].replace(';', '')]
+        andCond = True
+    else:
+        conditions = [cmds[5].replace(';', '')]
+    
+    for table in tableList:
+        if table.name == tableName:
+            table.select(conditions, andCond, orCond)
+            table.updateFile()
 
 def main():
     myFile = open('schema.txt', 'r')
