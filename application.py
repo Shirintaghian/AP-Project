@@ -82,6 +82,23 @@ def selectRecord(cmds):
             table.select(conditions, andCond, orCond)
             table.updateFile()
 
+
+def call_DB(command):
+    cmdWords = command.split(' ')
+    if len(cmdWords)<2:
+        print("WRONG COMMAND!")
+    else:
+        if cmdWords[1] == 'INSERT':
+            insertRecord(cmdWords)
+        elif cmdWords[1] == 'UPDATE':
+            updateRecord(cmdWords)
+        elif cmdWords[1] == 'DELETE':
+            deleteRecord(cmdWords)
+        elif cmdWords[1] == 'SELECT':
+            selectRecord(cmdWords)
+        else:
+            print("WRONG COMMAND!")
+
 def main():
     myFile = open('schema.txt', 'r')
     lines = myFile.readlines()
@@ -118,20 +135,30 @@ def main():
         command = input()
         if command == 'quit':
             break
-        cmdWords = command.split(' ')
-        if len(cmdWords)<2:
-            print("WRONG COMMAND!")
+        if command[0] == '$':
+            call_DB(command)
         else:
-            if cmdWords[1] == 'INSERT':
-                insertRecord(cmdWords)
-            elif cmdWords[1] == 'UPDATE':
-                updateRecord(cmdWords)
-            elif cmdWords[1] == 'DELETE':
-                deleteRecord(cmdWords)
-            elif cmdWords[1] == 'SELECT':
-                selectRecord(cmdWords)
+            if command == 'SIGN UP':
+                pass
+            elif command == 'SIGN IN':
+                pass
+            elif command == 'OPEN ACCOUNT':
+                pass
+            elif command == 'ACCOUNT REPORT':
+                pass
+            elif command == 'VIP ACCOUNT':
+                pass
+            elif command == 'MONEY TRANSFER':
+                pass
+            elif command == 'PAY BILL':
+                pass
+            elif command == 'LOAN REQUEST':
+                pass
+            elif command == 'CLOSE ACCOUNT':
+                pass
             else:
-                print("WRONG COMMAND!")
+                print('WRONG COMMAND!')
+        
 
 if __name__ == '__main__':
     main()
