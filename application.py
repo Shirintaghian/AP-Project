@@ -153,7 +153,20 @@ def pay_bill(nid, account_alias, amount):
     print("BILL WAS PAID SUCCESSFULLY")
 
 def money_transfer(nid, from_alias, to_alias, amount):
-    pass
+    for u in users:
+        if u.nid==nid:
+            for acc1 in u.accs:
+                for acc2 in u.accs:
+                    if acc1.alias == from_alias and acc2.alias == to_alias:
+                        acc1.balance = acc1.balance-amount
+                        acc2.balance=acc2.balance+amount
+                        acc1.transactions.append(Transaction(amount, "withdraw"))
+                        acc2.transactions.append(Transaction(amount, "dispose"))
+                        for table in tableList:
+                            if table.name == 'Transaction':
+                                table.insert([amount, "withdraw", from_alias])
+                                table.insert([amount, "dispose", to_alias])
+    print("MONEY TRANSFERRED SUCCESFULLY")
 
 def close_account(nid, alias, password):
     for u in users:
@@ -164,13 +177,14 @@ def close_account(nid, alias, password):
                         print("WRONG PASSWORD!")
                     else:
                         if acc.balance != 0:
-                            subs = input("Balance is more than 0, please insert a substitude account alias:")
+                            subs = input("Balance is more than 0, please insert a substitute account alias:")
                             money_transfer(nid=nid, from_alias=acc.alias, to_alias=subs, amount=acc.balance)
                         u.accs.remove(acc)
                         for t in tableList:
                             if t.name == 'Account':
                                 conditions = [f"nid=={nid}", f"alias=={alias}"]
                                 t.delete(conditions, True, False)
+    print("ACCOUNT CLOSED SUCCESSFULLY")
 
 def main():
     myFile = open('schema.txt', 'r')
@@ -233,14 +247,17 @@ def main():
             elif command == 'STARRED ACCOUNT':
                 pass
             elif command == 'MONEY TRANSFER':
-                pass
+                nid = input("Please insert your National ID number:")
+                from_alias = input("From which account alias?")
+                to_alias = input("To which account alias?")
+                amount = input("Please enter the amount:")
+                money_transfer(nid=nid, from_alias=from_alias, to_alias=to_alias, amount=amount)
             elif command == 'PAY BILL':
                 nid = input("Please insert your National ID number:")
                 bill_number = input("Please insert your bill number:")
                 account_alias = input("Please insert your account alias:")
                 amount = input("Please insert the amount:")
                 pay_bill(nid, account_alias, amount)
-                pass
             elif command == 'LOAN REQUEST':
                 pass
             elif command == 'CLOSE ACCOUNT':
