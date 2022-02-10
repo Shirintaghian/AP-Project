@@ -7,9 +7,13 @@ class Account:
         self.password = password
 
 class User:
-    def __init__(self, nid: str, password: str):
+    accs = []
+    def __init__(self, name: str, nid: str, password: str, phone: str, email: str):
+        self.name = name
         self.nid = nid
         self.password = password
+        self.phone = phone
+        self.email = email
 
 class Transaction:
     def __init__(self, amount: int, tType: str):

@@ -1,6 +1,9 @@
 User
+name CHAR(200)
 nid UNIQUE CHAR(200)
 password CHAR(64)
+phone CHAR(200)
+email CHAR(200)
 
 Account
 alias UNIQUE CHAR(200)

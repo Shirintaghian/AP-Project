@@ -1,5 +1,7 @@
 from database import Table, Field
+from account import Account, User, Transaction
 
+users = []
 tableList = []
 
 def insertRecord(cmds):
@@ -64,7 +66,6 @@ def deleteRecord(cmds):
             table.delete(conditions, andCond, orCond)
             table.updateFile()
 
-
 def selectRecord(cmds):
     tableName = cmds[3]
     conditions, orCond, andCond = [], False, False
@@ -82,7 +83,6 @@ def selectRecord(cmds):
             table.select(conditions, andCond, orCond)
             table.updateFile()
 
-
 def call_DB(command):
     cmdWords = command.split(' ')
     if len(cmdWords)<2:
@@ -98,6 +98,79 @@ def call_DB(command):
             selectRecord(cmdWords)
         else:
             print("WRONG COMMAND!")
+
+def sign_up(name, nid, password, phone, email):
+    u = User(name=name, nid=nid, password=password, phone=phone, email=email)
+    users.append(u)
+    for table in tableList:
+        if table.name == 'User':
+            table.insert([name, nid, password, phone, email])
+    print("SIGNED UP SUCCESSFULLY")
+
+def sign_in(nid, password):
+    flag = False
+    for u in users:
+        if u.nid == nid and u.password == password:
+            flag = True
+    if flag:
+        print("SIGNED IN SUCCESSFULLY")
+    else: 
+        print("INCORRECT CREDENTIALS")
+
+def open_account(nid, alias, password):
+    acc = Account(alias=alias, nid=nid, password=password)
+    for u in users:
+        if u.nid==nid:
+            u.accs.append(acc)
+    for table in tableList:
+        if table.name == 'Account':
+            table.insert([alias, nid, password])
+    print("ACCOUNT OPENED SUCCESSFULLY")
+
+def account_report(nid):
+    for u in users:
+        if u.nid==nid:
+            for acc in u.accs:
+                print(f"ACCOUNT ALIAS: {acc.alias} ----- ACCOUNT BALANCE: {acc.balance}")
+                print("----------------------------------------")
+                print("--------------TRANSACTIONS--------------")
+                print("----------------------------------------")
+                for trans in acc.transactions:
+                    print(f"AMOUNT: {trans.amount} ----- TYPE: {trans.tType}")
+                print('\n')
+
+def pay_bill(nid, account_alias, amount):
+    for u in users:
+        if u.nid==nid:
+            for acc in u.accs:
+                if acc.alias == account_alias:
+                    t = Transaction(amount=amount, tType="withdraw")
+                    acc.transactions.append(t)
+                    acc.balance = acc.balance-amount
+                    for table in tableList:
+                        if table.name == 'Transaction':
+                            table.insert([amount, "withdraw", account_alias])
+    print("BILL WAS PAID SUCCESSFULLY")
+
+def money_transfer(nid, from_alias, to_alias, amount):
+    pass
+
+def close_account(nid, alias, password):
+    for u in users:
+        if u.nid==nid:
+            for acc in u.accs:
+                if acc.alias == alias:
+                    if acc.password != password:
+                        print("WRONG PASSWORD!")
+                    else:
+                        if acc.balance != 0:
+                            subs = input("Balance is more than 0, please insert a substitude account alias:")
+                            money_transfer(nid=nid, from_alias=acc.alias, to_alias=subs, amount=acc.balance)
+                        u.accs.remove(acc)
+                        for t in tableList:
+                            if t.name == 'Account':
+                                conditions = [f"nid=={nid}", f"alias=={alias}"]
+                                t.delete(conditions, True, False)
 
 def main():
     myFile = open('schema.txt', 'r')
@@ -139,23 +212,42 @@ def main():
             call_DB(command)
         else:
             if command == 'SIGN UP':
-                pass
+                name = input("Please insert your name:")
+                nid = input("Please insert your National ID number:")
+                password = input("Please insert your password:")
+                phone = input("Please insert your phone:")
+                email = input("Please insert your email:")
+                sign_up(name, nid, password, phone, email)
             elif command == 'SIGN IN':
-                pass
+                nid = input("Please insert your National ID number:")
+                password = input("Please insert your password:")
+                sign_in(nid, password)
             elif command == 'OPEN ACCOUNT':
-                pass
+                nid = input("Please insert your National ID number:")
+                alias = input("Please insert your account alias:")
+                password = input("Please insert your account password:")
+                open_account(nid, alias, password)
             elif command == 'ACCOUNT REPORT':
-                pass
-            elif command == 'VIP ACCOUNT':
+                nid = input("Please insert your National ID number:")
+                account_report(nid)
+            elif command == 'STARRED ACCOUNT':
                 pass
             elif command == 'MONEY TRANSFER':
                 pass
             elif command == 'PAY BILL':
+                nid = input("Please insert your National ID number:")
+                bill_number = input("Please insert your bill number:")
+                account_alias = input("Please insert your account alias:")
+                amount = input("Please insert the amount:")
+                pay_bill(nid, account_alias, amount)
                 pass
             elif command == 'LOAN REQUEST':
                 pass
             elif command == 'CLOSE ACCOUNT':
-                pass
+                nid = input("Please insert your National ID number:")
+                alias = input("Please insert your account alias:")
+                password = input("Please insert your account password:")
+                close_account(nid, alias, password)
             else:
                 print('WRONG COMMAND!')
         
