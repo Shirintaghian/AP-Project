@@ -149,7 +149,7 @@ def pay_bill(nid, account_alias, amount):
                 if acc.alias == account_alias:
                     t = Transaction(amount=amount, tType="withdraw")
                     acc.transactions.append(t)
-                    acc.balance = acc.balance-amount
+                    acc.balance = acc.balance-int(amount)
                     for table in tableList:
                         if table.name == 'Transaction':
                             table.insert([amount, "withdraw", account_alias])
@@ -162,8 +162,8 @@ def money_transfer(nid, from_alias, to_alias, amount):
             for acc1 in u.accs:
                 for acc2 in u.accs:
                     if acc1.alias == from_alias and acc2.alias == to_alias:
-                        acc1.balance = acc1.balance-amount
-                        acc2.balance=acc2.balance+amount
+                        acc1.balance = acc1.balance-int(amount)
+                        acc2.balance=acc2.balance+int(amount)
                         acc1.transactions.append(Transaction(amount, "withdraw"))
                         acc2.transactions.append(Transaction(amount, "deposit"))
                         for table in tableList:
@@ -207,7 +207,7 @@ def deposit(nid, alias, amount):
             for acc in u.accs:
                 if acc.alias == alias:
                     acc.transactions.append(Transaction(amount=amount, tType="deposit"))
-                    acc.balance = acc.balance+amount
+                    acc.balance = acc.balance+int(amount)
                     for table in tableList:
                         if table.name == 'Transaction':
                             table.insert([amount, "deposit", alias])
@@ -221,7 +221,7 @@ def loan_request(nid, alias, amount):
             for acc in u.accs:
                 if acc.alias == alias:
                     acc.transactions.append(Transaction(amount=amount, tType="deposit"))
-                    acc.balance = acc.balance+amount
+                    acc.balance = acc.balance+int(amount)
                     for table in tableList:
                         if table.name == 'Transaction':
                             table.insert([amount, "deposit", alias])
@@ -229,7 +229,7 @@ def loan_request(nid, alias, amount):
     
                     for i in range(12):
                         acc.transactions.append(Transaction(amount=amount/12, tType="withdraw"))
-                        acc.balance = acc.balance-(amount/12)
+                        acc.balance = acc.balance-(int(amount)/12)
                         for table in tableList:
                             if table.name == 'Transaction':
                                 table.insert([amount/12, "withdraw", alias])
