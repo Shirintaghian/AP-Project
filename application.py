@@ -1,3 +1,4 @@
+import time
 from database import Table, Field
 from account import Account, User, Transaction
 
@@ -105,6 +106,7 @@ def sign_up(name, nid, password, phone, email):
     for table in tableList:
         if table.name == 'User':
             table.insert([name, nid, password, phone, email])
+            table.updateFile()
     print("SIGNED UP SUCCESSFULLY")
 
 def sign_in(nid, password):
@@ -125,6 +127,7 @@ def open_account(nid, alias, password):
     for table in tableList:
         if table.name == 'Account':
             table.insert([alias, nid, password])
+            table.updateFile()
     print("ACCOUNT OPENED SUCCESSFULLY")
 
 def account_report(nid):
@@ -150,6 +153,7 @@ def pay_bill(nid, account_alias, amount):
                     for table in tableList:
                         if table.name == 'Transaction':
                             table.insert([amount, "withdraw", account_alias])
+                            table.updateFile()
     print("BILL WAS PAID SUCCESSFULLY")
 
 def money_transfer(nid, from_alias, to_alias, amount):
@@ -161,12 +165,22 @@ def money_transfer(nid, from_alias, to_alias, amount):
                         acc1.balance = acc1.balance-amount
                         acc2.balance=acc2.balance+amount
                         acc1.transactions.append(Transaction(amount, "withdraw"))
-                        acc2.transactions.append(Transaction(amount, "dispose"))
+                        acc2.transactions.append(Transaction(amount, "deposit"))
                         for table in tableList:
                             if table.name == 'Transaction':
                                 table.insert([amount, "withdraw", from_alias])
-                                table.insert([amount, "dispose", to_alias])
+                                table.updateFile()
+                                table.insert([amount, "deposit", to_alias])
+                                table.updateFile()
     print("MONEY TRANSFERRED SUCCESFULLY")
+
+def add_star_account(nid, alias):
+    for u in users:
+        if u.nid==nid:
+            for acc in u.accs:
+                if acc.alias == alias:
+                    u.stars.append(acc)
+    print("STAR ACCOUNT ADDED SUCCESSFULLY")
 
 def close_account(nid, alias, password):
     for u in users:
@@ -184,7 +198,45 @@ def close_account(nid, alias, password):
                             if t.name == 'Account':
                                 conditions = [f"nid=={nid}", f"alias=={alias}"]
                                 t.delete(conditions, True, False)
+                                t.updateFile()
     print("ACCOUNT CLOSED SUCCESSFULLY")
+
+def deposit(nid, alias, amount):
+    for u in users:
+        if u.nid==nid:
+            for acc in u.accs:
+                if acc.alias == alias:
+                    acc.transactions.append(Transaction(amount=amount, tType="deposit"))
+                    acc.balance = acc.balance+amount
+                    for table in tableList:
+                        if table.name == 'Transaction':
+                            table.insert([amount, "deposit", alias])
+                            table.updateFile()
+    print("DEPOSITED SUCCESSFULLY")
+
+
+def loan_request(nid, alias, amount):
+    for u in users:
+        if u.nid==nid:
+            for acc in u.accs:
+                if acc.alias == alias:
+                    acc.transactions.append(Transaction(amount=amount, tType="deposit"))
+                    acc.balance = acc.balance+amount
+                    for table in tableList:
+                        if table.name == 'Transaction':
+                            table.insert([amount, "deposit", alias])
+                            table.updateFile()
+    
+                    for i in range(12):
+                        acc.transactions.append(Transaction(amount=amount/12, tType="withdraw"))
+                        acc.balance = acc.balance-(amount/12)
+                        for table in tableList:
+                            if table.name == 'Transaction':
+                                table.insert([amount/12, "withdraw", alias])
+                                table.updateFile()
+                        time.sleep(20)
+    print("LOAN REQUEST WAS SUCCESSFUL")
+
 
 def main():
     myFile = open('schema.txt', 'r')
@@ -244,8 +296,15 @@ def main():
             elif command == 'ACCOUNT REPORT':
                 nid = input("Please insert your National ID number:")
                 account_report(nid)
+            elif command == 'DEPOSIT':
+                nid = input("Please insert your National ID number:")
+                alias = input("Please insert your account alias:")
+                amount = input("Please enter the amount:")
+                deposit(nid, alias, amount)
             elif command == 'STARRED ACCOUNT':
-                pass
+                nid = input("Please insert your National ID number:")
+                alias = input("Please insert your account alias:")
+                add_star_account(nid, alias)
             elif command == 'MONEY TRANSFER':
                 nid = input("Please insert your National ID number:")
                 from_alias = input("From which account alias?")
@@ -259,7 +318,10 @@ def main():
                 amount = input("Please insert the amount:")
                 pay_bill(nid, account_alias, amount)
             elif command == 'LOAN REQUEST':
-                pass
+                nid = input("Please insert your National ID number:")
+                alias = input("Please insert your account alias:")
+                amount = input("Please enter the amount:")
+                loan_request(nid, alias, amount)
             elif command == 'CLOSE ACCOUNT':
                 nid = input("Please insert your National ID number:")
                 alias = input("Please insert your account alias:")

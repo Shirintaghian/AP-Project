@@ -8,6 +8,7 @@ class Account:
 
 class User:
     accs = []
+    stars = []
     def __init__(self, name: str, nid: str, password: str, phone: str, email: str):
         self.name = name
         self.nid = nid
