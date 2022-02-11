@@ -124,10 +124,10 @@ def open_account(nid, alias, password):
     for u in users:
         if u.nid==nid:
             u.accs.append(acc)
-    for table in tableList:
-        if table.name == 'Account':
-            table.insert([alias, nid, password])
-            table.updateFile()
+            for table in tableList:
+                if table.name == 'Account':
+                    table.insert([alias, nid, password])
+                    table.updateFile()
     print("ACCOUNT OPENED SUCCESSFULLY")
 
 def account_report(nid):

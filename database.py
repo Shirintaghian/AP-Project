@@ -1,8 +1,11 @@
+from time import sleep
+
+
 class Table:
-    records = []
     def __init__(self, name: str, fields: list):
         self.name = name
         self.fields = fields
+        self.records = []
 
     def insert(self, fieldValues):
         self.records.append(fieldValues)
