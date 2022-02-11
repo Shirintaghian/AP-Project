@@ -235,6 +235,7 @@ def loan_request(nid, alias, amount):
                                 table.insert([amount/12, "withdraw", alias])
                                 table.updateFile()
                         time.sleep(20)
+                        print("INSTALLMENT DEDUCTED")
     print("LOAN REQUEST WAS SUCCESSFUL")
 
 
